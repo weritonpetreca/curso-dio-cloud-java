@@ -104,7 +104,18 @@ public class BoardMenu {
     }
 
     private void unblockCard() throws SQLException {
-
+        System.out.println("Informe o ID do Card a ser desbloqueado:");
+        var cardId = scanner.nextLong();
+        System.out.println("Informe o motivo do desbloqueio do Card:");
+        var unblockReason = scanner.next();
+        try (var connection = getConnection()) {
+            var cardQuery = new CardQueryService(connection);
+            var card = cardQuery.findById(cardId).orElseThrow();
+            new CardService(connection).unblock(cardId, unblockReason);
+            System.out.printf("O Card '%s' foi desbloqueado com sucesso.%n", card.title());
+        } catch (RuntimeException ex) {
+            System.out.println("Erro ao desbloquear o Card: " + ex.getMessage());
+        }
     }
 
     private void cancelCard() throws SQLException {
